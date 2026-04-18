@@ -6,6 +6,18 @@ const CURRENCIES = [
   { value: 'EUR', label: 'EUR — Euro (€)' },
 ]
 
+const SERVICE_OPTIONS = [
+  { value: '', label: '— Select a service —' },
+  { value: 'Social Media Management', label: 'Social Media Management' },
+  { value: 'Paid Ads', label: 'Paid Ads' },
+  { value: 'Website', label: 'Website' },
+  { value: 'Content Creation', label: 'Content Creation' },
+  { value: 'Hosting and Domain', label: 'Hosting and Domain' },
+  { value: 'SEO', label: 'SEO' },
+  { value: 'Local SEO', label: 'Local SEO' },
+  { value: 'custom', label: '✏️ Custom service...' },
+]
+
 export default function InvoiceForm({ invoice, setInvoice }) {
   const fileInputRef = useRef(null)
 
@@ -29,7 +41,7 @@ export default function InvoiceForm({ invoice, setInvoice }) {
   const addService = () => {
     setInvoice(prev => ({
       ...prev,
-      services: [...prev.services, { id: Date.now(), description: '', quantity: 1, unitPrice: 0 }],
+      services: [...prev.services, { id: Date.now(), description: '', quantity: 1, unitPrice: 0, isCustom: false }],
     }))
   }
 
@@ -229,13 +241,33 @@ export default function InvoiceForm({ invoice, setInvoice }) {
                   </button>
                 )}
               </div>
-              <input
-                type="text"
-                placeholder="Service / product description"
+              <select
                 className={inp + ' mb-2 bg-white'}
-                value={service.description}
-                onChange={e => updateService(service.id, 'description', e.target.value)}
-              />
+                value={SERVICE_OPTIONS.some(o => o.value === service.description) ? service.description : (service.description ? 'custom' : '')}
+                onChange={e => {
+                  const val = e.target.value
+                  if (val === 'custom') {
+                    updateService(service.id, 'description', '')
+                    updateService(service.id, 'isCustom', true)
+                  } else {
+                    updateService(service.id, 'description', val)
+                    updateService(service.id, 'isCustom', false)
+                  }
+                }}
+              >
+                {SERVICE_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              {(service.isCustom || (!SERVICE_OPTIONS.some(o => o.value === service.description) && service.description)) && (
+                <input
+                  type="text"
+                  placeholder="Enter custom service name"
+                  className={inp + ' mb-2 bg-white'}
+                  value={service.description}
+                  onChange={e => updateService(service.id, 'description', e.target.value)}
+                />
+              )}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs text-gray-500 mb-1 block">Quantity</label>

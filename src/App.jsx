@@ -34,7 +34,7 @@ const initialState = {
   currency: 'AUD',
   taxRate: 10,
   services: [
-    { id: 1, description: '', quantity: 1, unitPrice: 0 },
+    { id: 1, description: '', quantity: 1, unitPrice: 0, isCustom: false },
   ],
   notes: 'Thank you for your business! Please make payment by the due date.',
 }
