@@ -212,7 +212,27 @@ async function downloadPDF() {
   label.textContent = 'Generating PDF...';
   try {
     const el = document.getElementById('invoice-preview');
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false });
+    const scaler = el.parentElement;
+
+    // Temporarily undo the CSS scale so html2canvas sees the full element
+    const prevTransform = scaler.style.transform;
+    const prevWidth = scaler.style.width;
+    scaler.style.transform = 'none';
+    scaler.style.width = '794px';
+
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      width: el.scrollWidth,
+      height: el.scrollHeight,
+      windowWidth: 794,
+    });
+
+    scaler.style.transform = prevTransform;
+    scaler.style.width = prevWidth;
+
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
     pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
