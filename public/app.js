@@ -148,6 +148,8 @@ function renderDashboard() {
         <span class="dash-contact-use">Use →</span>
       </div>`).join('');
   }
+
+  renderDashboardServices();
 }
 
 // ── New Invoice ───────────────────────────────────────
@@ -701,6 +703,80 @@ function buildInvoiceHTML(data) {
     ${data.notes ? `<div class="inv-notes-wrap"><div class="inv-notes-label">Notes &amp; Payment Terms</div><div class="inv-notes-text">${escHtml(data.notes)}</div></div>` : ''}
     <div class="inv-footer">Generated with Invoice Generator</div>
   </div>`;
+}
+
+// ── Saved Services (Dashboard) ────────────────────────
+function getSavedServices() {
+  try { return JSON.parse(localStorage.getItem('inv_saved_services') || '[]'); } catch { return []; }
+}
+
+function saveServicesStorageList(list) {
+  localStorage.setItem('inv_saved_services', JSON.stringify(list));
+}
+
+function saveDashService() {
+  const select = document.getElementById('dash-svc-name');
+  const customInput = document.getElementById('dash-svc-custom');
+  let name = select.value === '__custom__' ? (customInput ? customInput.value.trim() : '') : select.value.trim();
+  const price = parseFloat(document.getElementById('dash-svc-price').value) || 0;
+  if (!name) { showToast('Enter a service name.'); return; }
+  const list = getSavedServices();
+  list.push({ id: Date.now(), name, defaultPrice: price });
+  saveServicesStorageList(list);
+  select.value = '';
+  if (customInput) customInput.value = '';
+  document.getElementById('dash-svc-price').value = '';
+  document.getElementById('dash-svc-custom-row').style.display = 'none';
+  renderDashboardServices();
+  showToast('Service saved!');
+}
+
+function deleteSavedService(id) {
+  saveServicesStorageList(getSavedServices().filter(s => s.id !== id));
+  renderDashboardServices();
+}
+
+function useServiceInInvoice(id) {
+  const svc = getSavedServices().find(s => s.id === id);
+  if (!svc) return;
+  showGenerator();
+  services.push({ id: serviceIdCounter++, description: svc.name, quantity: 1, unitPrice: svc.defaultPrice, isCustom: false });
+  renderServices();
+  update();
+  showToast(`"${svc.name}" added to invoice.`);
+}
+
+function renderDashboardServices() {
+  const list = getSavedServices();
+  const countEl = document.getElementById('dash-svc-count');
+  if (countEl) countEl.textContent = list.length;
+  const container = document.getElementById('dash-services');
+  if (!container) return;
+  if (!list.length) {
+    container.innerHTML = '<p class="dash-empty">No services saved. Add one above.</p>';
+    return;
+  }
+  const firstSym = (() => {
+    const invs = getSavedInvoices();
+    return invs.length ? (invs[0].sym || 'A$') : 'A$';
+  })();
+  const fmtMoney = (n, s) => `${s}${Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+  container.innerHTML = list.map(s => `
+    <div class="dash-svc-item">
+      <div class="dash-svc-info">
+        <div class="dash-svc-name">${escHtml(s.name)}</div>
+        <div class="dash-svc-price">${fmtMoney(s.defaultPrice, firstSym)}</div>
+      </div>
+      <div class="dash-svc-actions">
+        <button class="dash-svc-use-btn" onclick="useServiceInInvoice(${s.id})">+ Use</button>
+        <button class="dash-svc-del-btn" onclick="deleteSavedService(${s.id})" title="Delete">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function handleDashSvcSelect(select) {
+  const row = document.getElementById('dash-svc-custom-row');
+  if (row) row.style.display = select.value === '__custom__' ? 'block' : 'none';
 }
 
 // ── Toast ─────────────────────────────────────────────

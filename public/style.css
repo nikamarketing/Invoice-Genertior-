@@ -503,6 +503,85 @@ main { flex: 1; min-width: 0; padding: 20px 16px; display: grid; grid-template-c
 
 .dash-empty { padding: 20px 16px; font-size: .78rem; color: var(--gray-400); text-align: center; }
 
+/* Services card in dashboard */
+.dash-svc-form {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.dash-svc-row { display: flex; gap: 7px; }
+.dash-svc-bottom { align-items: center; }
+.dash-svc-form select,
+.dash-svc-form input[type="text"],
+.dash-svc-form input[type="number"] {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--gray-200);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: .8rem;
+  color: var(--gray-800);
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.dash-svc-form select:focus,
+.dash-svc-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(67,56,202,.12); }
+.dash-svc-save-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 12px;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+.dash-svc-save-btn:hover { background: var(--accent-dark); }
+
+.dash-svc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  gap: 8px;
+}
+.dash-svc-item:last-child { border-bottom: none; }
+.dash-svc-info { flex: 1; min-width: 0; }
+.dash-svc-name { font-size: .8rem; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-svc-price { font-size: .72rem; color: var(--accent); font-weight: 700; margin-top: 1px; }
+.dash-svc-actions { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+.dash-svc-use-btn {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .12s;
+}
+.dash-svc-use-btn:hover { background: var(--accent); color: #fff; }
+.dash-svc-del-btn {
+  background: none;
+  border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+  font-size: .65rem;
+  padding: 4px 5px;
+  border-radius: 4px;
+  transition: color .12s, background .12s;
+}
+.dash-svc-del-btn:hover { color: #dc2626; background: #fee2e2; }
+
 /* ── Toast ── */
 .toast {
   position: fixed;

@@ -67,6 +67,36 @@
             </div>
             <div id="dash-clients"></div>
           </div>
+
+          <div class="dash-card">
+            <div class="dash-card-hdr">
+              <span>Saved Services</span>
+              <span class="dash-card-count" id="dash-svc-count">0</span>
+            </div>
+            <div class="dash-svc-form">
+              <div class="dash-svc-row">
+                <select id="dash-svc-name" onchange="handleDashSvcSelect(this)">
+                  <option value="">— Select or type below —</option>
+                  <option>Social Media Management</option>
+                  <option>Paid Ads</option>
+                  <option>Website</option>
+                  <option>Content Creation</option>
+                  <option>Hosting and Domain</option>
+                  <option>SEO</option>
+                  <option>Local SEO</option>
+                  <option value="__custom__">✏️ Custom...</option>
+                </select>
+              </div>
+              <div class="dash-svc-row" id="dash-svc-custom-row" style="display:none">
+                <input type="text" id="dash-svc-custom" placeholder="Custom service name" />
+              </div>
+              <div class="dash-svc-row dash-svc-bottom">
+                <input type="number" id="dash-svc-price" placeholder="Default price" min="0" step="0.01" />
+                <button class="dash-svc-save-btn" onclick="saveDashService()">+ Save Service</button>
+              </div>
+            </div>
+            <div id="dash-services"></div>
+          </div>
         </div>
 
       </div>
