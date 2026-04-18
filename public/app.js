@@ -20,9 +20,135 @@ window.addEventListener('DOMContentLoaded', () => {
   if (senders.length > 0) selectSender(senders[0].id, false);
 
   renderServices();
-  renderSidebar();
+  showDashboard();
   update();
 });
+
+// ── Dashboard ─────────────────────────────────────────
+function showDashboard() {
+  document.getElementById('dashboard-view').style.display = 'block';
+  document.getElementById('generator-view').style.display = 'none';
+  document.getElementById('nav-dashboard').classList.add('nav-active');
+  document.getElementById('nav-generator').classList.remove('nav-active');
+  renderDashboard();
+}
+
+function showGenerator() {
+  document.getElementById('dashboard-view').style.display = 'none';
+  document.getElementById('generator-view').style.display = 'flex';
+  document.getElementById('nav-generator').classList.add('nav-active');
+  document.getElementById('nav-dashboard').classList.remove('nav-active');
+  renderSidebar();
+}
+
+function startNewInvoice() {
+  showGenerator();
+  newInvoice();
+}
+
+function useSenderFromDash(id) {
+  showGenerator();
+  selectSender(id, true);
+}
+
+function useClientFromDash(id) {
+  showGenerator();
+  selectClient(id);
+  update();
+}
+
+function renderDashboard() {
+  const invoices = getSavedInvoices();
+  const senders = getSenders();
+  const clients = getSavedClients();
+  const sym = CURRENCY[invoices[0] && invoices[0].currency] || 'A$';
+
+  // Greeting
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const senderName = senders.length ? senders[0].name : 'there';
+  setText('dash-greeting', `${greeting}, ${senderName}`);
+
+  // Date
+  const now = new Date();
+  setText('dash-date', now.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+
+  // Analytics
+  const totalRev = invoices.reduce((s, i) => s + (Number(i.total) || 0), 0);
+  const thisMonth = invoices.filter(i => {
+    if (!i.invoiceDate) return false;
+    const d = new Date(i.invoiceDate);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).reduce((s, i) => s + (Number(i.total) || 0), 0);
+  const avgInv = invoices.length ? totalRev / invoices.length : 0;
+  const fmtMoney = (n, s) => `${s}${Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+  const firstSym = invoices.length ? (invoices[0].sym || 'A$') : 'A$';
+
+  document.getElementById('dash-analytics').innerHTML = [
+    { label: 'Total Revenue', value: fmtMoney(totalRev, firstSym), sub: `${invoices.length} invoice${invoices.length !== 1 ? 's' : ''}` },
+    { label: 'Total Invoices', value: invoices.length, sub: 'all time' },
+    { label: 'This Month', value: fmtMoney(thisMonth, firstSym), sub: now.toLocaleString('en-AU', { month: 'long' }) },
+    { label: 'Average Invoice', value: fmtMoney(avgInv, firstSym), sub: 'per invoice' },
+  ].map(c => `
+    <div class="dash-metric">
+      <div class="dash-metric-label">${c.label}</div>
+      <div class="dash-metric-value">${c.value}</div>
+      <div class="dash-metric-sub">${c.sub}</div>
+    </div>`).join('');
+
+  // Recent invoices count
+  setText('dash-inv-count', invoices.length);
+
+  // Recent invoices table
+  const fmtDate = (s) => { if (!s) return '—'; const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; };
+  const dashInv = document.getElementById('dash-invoices');
+  if (!invoices.length) {
+    dashInv.innerHTML = '<p class="dash-empty">No invoices yet. Click "+ Create Invoice" to get started.</p>';
+  } else {
+    dashInv.innerHTML = `<table class="dash-table">
+      <thead><tr><th>Invoice #</th><th>Client</th><th>Date</th><th>Amount</th><th></th></tr></thead>
+      <tbody>${invoices.slice(0, 8).map(inv => `<tr>
+        <td><span class="dash-inv-num">${escHtml(inv.invoiceNumber)}</span></td>
+        <td>${escHtml(inv.clientCompany || inv.clientName || '—')}</td>
+        <td>${fmtDate(inv.invoiceDate)}</td>
+        <td><strong>${fmtMoney(inv.total, inv.sym || 'A$')}</strong></td>
+        <td><button class="dash-dl-btn" onclick="redownloadInvoice(${inv.id}, this)">↓ PDF</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }
+
+  // Senders
+  const dashSenders = document.getElementById('dash-senders');
+  if (!senders.length) {
+    dashSenders.innerHTML = '<p class="dash-empty">No senders saved.</p>';
+  } else {
+    dashSenders.innerHTML = senders.map(s => `
+      <div class="dash-contact-item" onclick="useSenderFromDash(${s.id})">
+        <div class="dash-contact-avatar">${escHtml((s.name || '?')[0].toUpperCase())}</div>
+        <div class="dash-contact-info">
+          <div class="dash-contact-name">${escHtml(s.name)}</div>
+          <div class="dash-contact-sub">${escHtml(s.email || s.phone || '')}</div>
+        </div>
+        <span class="dash-contact-use">Use →</span>
+      </div>`).join('');
+  }
+
+  // Clients
+  const dashClients = document.getElementById('dash-clients');
+  if (!clients.length) {
+    dashClients.innerHTML = '<p class="dash-empty">No clients saved.</p>';
+  } else {
+    dashClients.innerHTML = clients.map(c => `
+      <div class="dash-contact-item" onclick="useClientFromDash(${c.id})">
+        <div class="dash-contact-avatar">${escHtml(((c.company || c.name || '?')[0]).toUpperCase())}</div>
+        <div class="dash-contact-info">
+          <div class="dash-contact-name">${escHtml(c.company || c.name || 'Client')}</div>
+          <div class="dash-contact-sub">${escHtml(c.email || '')}</div>
+        </div>
+        <span class="dash-contact-use">Use →</span>
+      </div>`).join('');
+  }
+}
 
 // ── New Invoice ───────────────────────────────────────
 function newInvoice() {
@@ -478,7 +604,11 @@ function saveToHistory(data) {
     try { localStorage.setItem('inv_history', JSON.stringify(slim)); } catch {}
   }
   sectionState.invoices = true;
-  renderSidebar();
+  if (document.getElementById('dashboard-view').style.display !== 'none') {
+    renderDashboard();
+  } else {
+    renderSidebar();
+  }
 }
 
 async function redownloadInvoice(id, btn) {

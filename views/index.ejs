@@ -15,19 +15,75 @@
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
       </svg>
       <span>Invoice Generator</span>
+      <nav class="header-nav">
+        <button id="nav-dashboard" class="nav-btn nav-active" onclick="showDashboard()">Dashboard</button>
+        <button id="nav-generator" class="nav-btn" onclick="showGenerator()">Generator</button>
+      </nav>
     </div>
   </header>
 
-  <div class="app-layout">
+  <!-- ===== DASHBOARD VIEW ===== -->
+  <div id="dashboard-view">
+    <div class="dash-container">
 
-    <!-- ===== SIDEBAR ===== -->
+      <!-- Welcome -->
+      <div class="dash-welcome">
+        <div>
+          <h1 class="dash-title" id="dash-greeting">Welcome back</h1>
+          <p class="dash-sub" id="dash-date"></p>
+        </div>
+        <button class="btn-create-invoice" onclick="startNewInvoice()">+ Create Invoice</button>
+      </div>
+
+      <!-- Analytics Cards -->
+      <div class="dash-analytics" id="dash-analytics"></div>
+
+      <!-- Main Grid -->
+      <div class="dash-main">
+
+        <!-- Left: Recent Invoices -->
+        <div class="dash-card">
+          <div class="dash-card-hdr">
+            <span>Recent Invoices</span>
+            <span class="dash-card-count" id="dash-inv-count">0</span>
+          </div>
+          <div id="dash-invoices"></div>
+        </div>
+
+        <!-- Right: Senders + Clients -->
+        <div class="dash-side">
+          <div class="dash-card">
+            <div class="dash-card-hdr">
+              <span>Senders</span>
+              <button class="dash-add-btn" onclick="showGenerator()">+ Add</button>
+            </div>
+            <div id="dash-senders"></div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-hdr">
+              <span>Clients</span>
+              <button class="dash-add-btn" onclick="showGenerator()">+ Add</button>
+            </div>
+            <div id="dash-clients"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GENERATOR VIEW ===== -->
+  <div class="app-layout" id="generator-view" style="display:none">
+
+    <!-- Sidebar -->
     <aside class="sidebar-panel">
       <button class="btn-new-invoice" onclick="newInvoice()">+ New Invoice</button>
       <div id="sb-content"></div>
     </aside>
 
     <main>
-      <!-- ===== FORM PANEL ===== -->
+      <!-- FORM PANEL -->
       <section class="panel form-panel">
         <h2>Invoice Details</h2>
 
@@ -74,7 +130,7 @@
           </div>
         </div>
 
-        <!-- Your Details (Provider) -->
+        <!-- Your Details -->
         <div class="section">
           <div class="section-title">Your Details (Service Provider)</div>
           <div class="grid-2">
@@ -116,7 +172,7 @@
           <button type="button" class="save-profile-btn" onclick="saveCurrentAsSender()">Save as Sender</button>
         </div>
 
-        <!-- Bill To (Client) -->
+        <!-- Bill To -->
         <div class="section">
           <div class="section-title">Bill To (Client Details)</div>
           <div class="grid-2">
@@ -175,7 +231,7 @@
         </div>
       </section>
 
-      <!-- ===== PREVIEW PANEL ===== -->
+      <!-- PREVIEW PANEL -->
       <section class="panel preview-panel">
         <button class="btn-download" onclick="downloadPDF()">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +244,6 @@
 
         <div class="preview-scaler">
           <div id="invoice-preview" class="invoice-paper">
-
             <div class="inv-header">
               <div class="inv-logo-block">
                 <img id="prev-logo" src="" alt="" style="display:none;max-height:80px;max-width:200px;object-fit:contain" />
@@ -203,9 +258,7 @@
                 </div>
               </div>
             </div>
-
             <div class="inv-divider"></div>
-
             <div class="inv-parties">
               <div class="inv-from">
                 <div class="inv-party-label">From</div>
@@ -220,7 +273,6 @@
                 <div id="prev-client-addr" class="inv-party-lines"></div>
               </div>
             </div>
-
             <table class="inv-table">
               <thead>
                 <tr>
@@ -232,13 +284,9 @@
               </thead>
               <tbody id="prev-services"></tbody>
             </table>
-
             <div class="inv-totals-wrap">
               <div class="inv-totals">
-                <div class="inv-total-row">
-                  <span>Subtotal</span>
-                  <span id="prev-subtotal">A$0.00</span>
-                </div>
+                <div class="inv-total-row"><span>Subtotal</span><span id="prev-subtotal">A$0.00</span></div>
                 <div class="inv-total-row" id="prev-tax-row">
                   <span id="prev-tax-label">Tax (10%)</span>
                   <span id="prev-tax-amt">A$0.00</span>
@@ -249,18 +297,15 @@
                 </div>
               </div>
             </div>
-
             <div id="prev-notes-wrap" class="inv-notes-wrap">
               <div class="inv-notes-label">Notes &amp; Payment Terms</div>
               <div id="prev-notes" class="inv-notes-text"></div>
             </div>
-
             <div class="inv-footer">Generated with Invoice Generator</div>
           </div>
         </div>
       </section>
     </main>
-
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
