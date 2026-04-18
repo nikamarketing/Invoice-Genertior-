@@ -22,94 +22,14 @@
 
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar-panel">
-      <div class="sidebar-header">
-        <span>Invoice History</span>
-        <span class="sidebar-badge" id="sidebar-count">0</span>
-      </div>
-      <div id="sidebar-list">
-        <p class="sidebar-empty">No invoices yet.<br>Click "Download as PDF" to save here.</p>
-      </div>
+      <button class="btn-new-invoice" onclick="newInvoice()">+ New Invoice</button>
+      <div id="sb-content"></div>
     </aside>
 
     <main>
       <!-- ===== FORM PANEL ===== -->
       <section class="panel form-panel">
         <h2>Invoice Details</h2>
-
-        <!-- Saved Senders -->
-        <div class="section">
-          <div class="section-title">Saved Senders</div>
-          <div id="senders-list" class="senders-list"></div>
-          <button type="button" class="btn-add" onclick="showAddSenderPanel()">+ Add New Sender</button>
-
-          <!-- Add Sender Panel -->
-          <div id="add-sender-panel" style="display:none" class="add-sender-panel">
-            <div class="add-sender-header">
-              <span>New Sender</span>
-              <button type="button" class="btn-close-panel" onclick="hideAddSenderPanel()" title="Close">&#10005;</button>
-            </div>
-
-            <!-- Logo upload -->
-            <div class="field">
-              <label>Logo (optional)</label>
-              <div class="logo-row">
-                <div id="as-logo-preview-wrap">
-                  <img id="as-logo-preview" src="" alt="Sender Logo" style="display:none;max-height:56px;max-width:140px;object-fit:contain;border:1px solid var(--gray-200);border-radius:6px;padding:3px;" />
-                </div>
-                <button type="button" class="btn-secondary" onclick="document.getElementById('as-logo-input').click()">Upload Logo</button>
-                <input type="file" id="as-logo-input" accept="image/*" style="display:none" onchange="handleSenderLogo(this)" />
-              </div>
-            </div>
-
-            <!-- Name & ABN / Email & Phone -->
-            <div class="grid-2">
-              <div class="field">
-                <label>Business / Sender Name <span style="color:#f87171">*</span></label>
-                <input type="text" id="as-name" placeholder="Acme Pty Ltd" />
-              </div>
-              <div class="field">
-                <label>ABN / Tax Number</label>
-                <input type="text" id="as-abn" placeholder="12 345 678 901" />
-              </div>
-              <div class="field">
-                <label>Email</label>
-                <input type="email" id="as-email" placeholder="hello@yourco.com" />
-              </div>
-              <div class="field">
-                <label>Phone</label>
-                <input type="text" id="as-phone" placeholder="+61 400 000 000" />
-              </div>
-            </div>
-
-            <!-- Address -->
-            <div class="field">
-              <label>Street Address</label>
-              <input type="text" id="as-address" placeholder="123 Main Street" />
-            </div>
-
-            <!-- Suburb / State / Postcode -->
-            <div class="grid-3">
-              <div class="field">
-                <label>City / Suburb</label>
-                <input type="text" id="as-suburb" placeholder="Sydney" />
-              </div>
-              <div class="field">
-                <label>State</label>
-                <input type="text" id="as-state" placeholder="NSW" />
-              </div>
-              <div class="field">
-                <label>Postcode</label>
-                <input type="text" id="as-postcode" placeholder="2000" />
-              </div>
-            </div>
-
-            <!-- Actions -->
-            <div style="display:flex;gap:8px;margin-top:4px;">
-              <button type="button" class="btn-save-sender" onclick="saveSenderFromForm()">Save Sender</button>
-              <button type="button" class="btn-secondary" onclick="hideAddSenderPanel()">Cancel</button>
-            </div>
-          </div>
-        </div>
 
         <!-- Logo -->
         <div class="section">
@@ -154,7 +74,7 @@
           </div>
         </div>
 
-        <!-- Provider / Your Details -->
+        <!-- Your Details (Provider) -->
         <div class="section">
           <div class="section-title">Your Details (Service Provider)</div>
           <div class="grid-2">
@@ -193,9 +113,10 @@
               <input type="text" id="providerPostcode" placeholder="2000" oninput="update()" />
             </div>
           </div>
+          <button type="button" class="save-profile-btn" onclick="saveCurrentAsSender()">Save as Sender</button>
         </div>
 
-        <!-- Client / Bill To -->
+        <!-- Bill To (Client) -->
         <div class="section">
           <div class="section-title">Bill To (Client Details)</div>
           <div class="grid-2">
@@ -230,6 +151,7 @@
               <input type="text" id="clientPostcode" placeholder="3000" oninput="update()" />
             </div>
           </div>
+          <button type="button" class="save-profile-btn" onclick="saveCurrentAsClient()">Save as Client</button>
         </div>
 
         <!-- Services -->
@@ -244,7 +166,7 @@
           <div class="section-title">Tax &amp; Notes</div>
           <div class="field">
             <label>Tax Rate (%)</label>
-            <input type="number" id="taxRate" min="0" max="100" step="0.1" oninput="update()" />
+            <input type="number" id="taxRate" value="0" min="0" max="100" step="0.1" oninput="update()" />
           </div>
           <div class="field">
             <label>Notes / Payment Terms</label>
@@ -267,7 +189,6 @@
         <div class="preview-scaler">
           <div id="invoice-preview" class="invoice-paper">
 
-            <!-- Invoice Header -->
             <div class="inv-header">
               <div class="inv-logo-block">
                 <img id="prev-logo" src="" alt="" style="display:none;max-height:80px;max-width:200px;object-fit:contain" />
@@ -283,10 +204,8 @@
               </div>
             </div>
 
-            <!-- Divider -->
             <div class="inv-divider"></div>
 
-            <!-- From / Bill To -->
             <div class="inv-parties">
               <div class="inv-from">
                 <div class="inv-party-label">From</div>
@@ -302,7 +221,6 @@
               </div>
             </div>
 
-            <!-- Services Table -->
             <table class="inv-table">
               <thead>
                 <tr>
@@ -315,7 +233,6 @@
               <tbody id="prev-services"></tbody>
             </table>
 
-            <!-- Totals -->
             <div class="inv-totals-wrap">
               <div class="inv-totals">
                 <div class="inv-total-row">
@@ -333,20 +250,18 @@
               </div>
             </div>
 
-            <!-- Notes -->
             <div id="prev-notes-wrap" class="inv-notes-wrap">
               <div class="inv-notes-label">Notes &amp; Payment Terms</div>
               <div id="prev-notes" class="inv-notes-text"></div>
             </div>
 
-            <!-- Footer -->
             <div class="inv-footer">Generated with Invoice Generator</div>
           </div>
         </div>
       </section>
     </main>
 
-  </div><!-- /.app-layout -->
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
