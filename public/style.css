@@ -24,9 +24,53 @@ header { background: var(--accent); color: #fff; box-shadow: var(--shadow-md); }
 .header-inner { max-width: 1400px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 10px; font-size: 1.35rem; font-weight: 700; letter-spacing: -.3px; }
 .header-icon { width: 28px; height: 28px; flex-shrink: 0; }
 
-/* ── Layout ── */
-main { max-width: 1400px; margin: 0 auto; padding: 28px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+/* ── App Layout (sidebar + main) ── */
+.app-layout { display: flex; align-items: flex-start; }
+main { flex: 1; min-width: 0; padding: 28px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
 @media (max-width: 1024px) { main { grid-template-columns: 1fr; } }
+
+/* ── Sidebar ── */
+.sidebar-panel { width: 240px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--gray-200); position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--gray-200); font-weight: 700; font-size: .875rem; color: var(--gray-800); background: #fff; position: sticky; top: 0; z-index: 5; }
+.sidebar-badge { background: var(--accent); color: #fff; border-radius: 12px; padding: 1px 8px; font-size: .65rem; font-weight: 800; min-width: 20px; text-align: center; }
+#sidebar-list { padding: 10px; flex: 1; }
+.sidebar-empty { text-align: center; font-size: .78rem; color: var(--gray-400); line-height: 1.7; padding: 24px 8px; }
+.sidebar-item { border: 1px solid var(--gray-200); border-radius: 8px; padding: 10px; margin-bottom: 8px; background: var(--gray-50); }
+.sidebar-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+.sidebar-item-num { font-weight: 700; font-size: .8rem; color: var(--accent); }
+.sidebar-item-del { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: .65rem; padding: 2px 5px; border-radius: 4px; line-height: 1; }
+.sidebar-item-del:hover { color: #dc2626; background: #fee2e2; }
+.sidebar-item-client { font-size: .72rem; color: var(--gray-700); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-item-meta { display: flex; justify-content: space-between; align-items: center; font-size: .68rem; color: var(--gray-500); margin-bottom: 8px; }
+.sidebar-item-meta strong { color: var(--gray-900); font-size: .7rem; }
+.sidebar-item-dl { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 6px 10px; font-size: .72rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+.sidebar-item-dl:hover { background: var(--accent-dark); }
+.sidebar-item-dl:disabled { opacity: .6; cursor: not-allowed; }
+@media (max-width: 900px) { .sidebar-panel { display: none; } }
+
+/* ── Sender Cards ── */
+.senders-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.senders-empty { font-size: .8rem; color: var(--gray-400); padding: 6px 0; }
+.sender-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--gray-200); border-radius: 8px; padding: 10px 12px; background: var(--gray-50); transition: border-color .15s; }
+.sender-card--active { border-color: var(--accent); background: var(--accent-light); }
+.sender-card-info { flex: 1; min-width: 0; }
+.sender-card-name { font-weight: 700; font-size: .875rem; color: var(--gray-900); }
+.sender-card-sub { font-size: .75rem; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sender-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.sender-use-btn { background: var(--gray-200); color: var(--gray-700); border: none; border-radius: 6px; padding: 5px 10px; font-size: .75rem; font-weight: 600; cursor: pointer; transition: background .15s; white-space: nowrap; }
+.sender-use-btn:hover { background: var(--gray-300, #d1d5db); }
+.sender-use-btn--active { background: var(--accent); color: #fff; }
+.sender-use-btn--active:hover { background: var(--accent-dark); }
+.sender-del-btn { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: .7rem; padding: 4px 6px; border-radius: 4px; }
+.sender-del-btn:hover { color: #dc2626; background: #fee2e2; }
+
+/* ── Add Sender Panel ── */
+.add-sender-panel { border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; background: var(--gray-50); margin-top: 10px; }
+.add-sender-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 700; font-size: .875rem; color: var(--gray-800); }
+.btn-close-panel { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: .875rem; padding: 2px 6px; border-radius: 4px; }
+.btn-close-panel:hover { color: var(--gray-700); background: var(--gray-200); }
+.btn-save-sender { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: .875rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+.btn-save-sender:hover { background: var(--accent-dark); }
 
 /* ── Panel ── */
 .panel { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--gray-200); }

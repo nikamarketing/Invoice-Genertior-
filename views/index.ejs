@@ -18,245 +18,335 @@
     </div>
   </header>
 
-  <main>
-    <!-- ===== FORM PANEL ===== -->
-    <section class="panel form-panel">
-      <h2>Invoice Details</h2>
+  <div class="app-layout">
 
-      <!-- Logo -->
-      <div class="section">
-        <div class="section-title">Logo</div>
-        <div class="logo-row">
-          <div id="logo-preview-wrap">
-            <div id="logo-placeholder">No logo</div>
-            <img id="logo-preview" src="" alt="Logo" style="display:none" />
-          </div>
-          <div>
-            <button type="button" class="btn-secondary" onclick="document.getElementById('logo-input').click()">Upload Logo</button>
-            <button type="button" class="btn-remove" id="logo-remove" style="display:none" onclick="removeLogo()">Remove</button>
-          </div>
-          <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="handleLogo(this)" />
-        </div>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar-panel">
+      <div class="sidebar-header">
+        <span>Invoice History</span>
+        <span class="sidebar-badge" id="sidebar-count">0</span>
       </div>
-
-      <!-- Invoice Info -->
-      <div class="section">
-        <div class="section-title">Invoice Info</div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Invoice Number</label>
-            <input type="text" id="invoiceNumber" value="INV-001" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Currency</label>
-            <select id="currency" onchange="update()">
-              <option value="AUD">AUD — Australian Dollar (A$)</option>
-              <option value="USD">USD — US Dollar ($)</option>
-              <option value="EUR">EUR — Euro (€)</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Invoice Date</label>
-            <input type="date" id="invoiceDate" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Due Date</label>
-            <input type="date" id="dueDate" oninput="update()" />
-          </div>
-        </div>
+      <div id="sidebar-list">
+        <p class="sidebar-empty">No invoices yet.<br>Click "Download as PDF" to save here.</p>
       </div>
+    </aside>
 
-      <!-- Provider -->
-      <div class="section">
-        <div class="section-title">Your Details (Service Provider)</div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Business / Your Name</label>
-            <input type="text" id="providerName" placeholder="Acme Pty Ltd" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>ABN / Tax Number</label>
-            <input type="text" id="providerABN" placeholder="12 345 678 901" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input type="email" id="providerEmail" placeholder="hello@yourco.com" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Phone</label>
-            <input type="text" id="providerPhone" placeholder="+61 400 000 000" oninput="update()" />
-          </div>
-        </div>
-        <div class="field">
-          <label>Street Address</label>
-          <input type="text" id="providerAddress" placeholder="123 Main Street" oninput="update()" />
-        </div>
-        <div class="grid-3">
-          <div class="field">
-            <label>City / Suburb</label>
-            <input type="text" id="providerSuburb" placeholder="Sydney" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>State</label>
-            <input type="text" id="providerState" placeholder="NSW" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Postcode</label>
-            <input type="text" id="providerPostcode" placeholder="2000" oninput="update()" />
-          </div>
-        </div>
-      </div>
+    <main>
+      <!-- ===== FORM PANEL ===== -->
+      <section class="panel form-panel">
+        <h2>Invoice Details</h2>
 
-      <!-- Client -->
-      <div class="section">
-        <div class="section-title">Bill To (Client Details)</div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Client Name</label>
-            <input type="text" id="clientName" placeholder="Jane Smith" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Company (optional)</label>
-            <input type="text" id="clientCompany" placeholder="Client Co. Pty Ltd" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input type="email" id="clientEmail" placeholder="jane@clientco.com" oninput="update()" />
-          </div>
-        </div>
-        <div class="field">
-          <label>Street Address</label>
-          <input type="text" id="clientAddress" placeholder="456 Client Avenue" oninput="update()" />
-        </div>
-        <div class="grid-3">
-          <div class="field">
-            <label>City / Suburb</label>
-            <input type="text" id="clientSuburb" placeholder="Melbourne" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>State</label>
-            <input type="text" id="clientState" placeholder="VIC" oninput="update()" />
-          </div>
-          <div class="field">
-            <label>Postcode</label>
-            <input type="text" id="clientPostcode" placeholder="3000" oninput="update()" />
-          </div>
-        </div>
-      </div>
+        <!-- Saved Senders -->
+        <div class="section">
+          <div class="section-title">Saved Senders</div>
+          <div id="senders-list" class="senders-list"></div>
+          <button type="button" class="btn-add" onclick="showAddSenderPanel()">+ Add New Sender</button>
 
-      <!-- Services -->
-      <div class="section">
-        <div class="section-title">Services / Line Items</div>
-        <div id="services-list"></div>
-        <button type="button" class="btn-add" onclick="addService()">+ Add Line Item</button>
-      </div>
-
-      <!-- Tax & Notes -->
-      <div class="section">
-        <div class="section-title">Tax &amp; Notes</div>
-        <div class="field">
-          <label>Tax Rate (%)</label>
-          <input type="number" id="taxRate" value="10" min="0" max="100" step="0.1" oninput="update()" />
-        </div>
-        <div class="field">
-          <label>Notes / Payment Terms</label>
-          <textarea id="notes" rows="3" placeholder="Payment terms, bank details, thank you message..." oninput="update()">Thank you for your business! Please make payment by the due date.</textarea>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== PREVIEW PANEL ===== -->
-    <section class="panel preview-panel">
-      <button class="btn-download" onclick="downloadPDF()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-        </svg>
-        <span id="btn-label">Download as PDF</span>
-      </button>
-      <p class="preview-hint">Live preview — fill the form to see changes</p>
-
-      <div class="preview-scaler">
-        <div id="invoice-preview" class="invoice-paper">
-
-          <!-- Invoice Header -->
-          <div class="inv-header">
-            <div class="inv-logo-block">
-              <img id="prev-logo" src="" alt="" style="display:none;max-height:80px;max-width:200px;object-fit:contain" />
-              <div id="prev-biz-name" class="inv-biz-name"></div>
+          <!-- Add Sender Panel -->
+          <div id="add-sender-panel" style="display:none" class="add-sender-panel">
+            <div class="add-sender-header">
+              <span>New Sender</span>
+              <button type="button" class="btn-close-panel" onclick="hideAddSenderPanel()" title="Close">&#10005;</button>
             </div>
-            <div class="inv-title-block">
-              <div class="inv-title">INVOICE</div>
-              <div class="inv-meta">
-                <div><strong>Invoice #:</strong> <span id="prev-inv-num">INV-001</span></div>
-                <div><strong>Date:</strong> <span id="prev-inv-date">—</span></div>
-                <div id="prev-due-wrap"><strong>Due:</strong> <span id="prev-due-date">—</span></div>
+
+            <!-- Logo upload -->
+            <div class="field">
+              <label>Logo (optional)</label>
+              <div class="logo-row">
+                <div id="as-logo-preview-wrap">
+                  <img id="as-logo-preview" src="" alt="Sender Logo" style="display:none;max-height:56px;max-width:140px;object-fit:contain;border:1px solid var(--gray-200);border-radius:6px;padding:3px;" />
+                </div>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('as-logo-input').click()">Upload Logo</button>
+                <input type="file" id="as-logo-input" accept="image/*" style="display:none" onchange="handleSenderLogo(this)" />
               </div>
             </div>
-          </div>
 
-          <!-- Divider -->
-          <div class="inv-divider"></div>
-
-          <!-- From / Bill To -->
-          <div class="inv-parties">
-            <div class="inv-from">
-              <div class="inv-party-label">From</div>
-              <div id="prev-provider-name" class="inv-party-name"></div>
-              <div id="prev-provider-abn" class="inv-party-sub"></div>
-              <div id="prev-provider-addr" class="inv-party-lines"></div>
-            </div>
-            <div class="inv-billto">
-              <div class="inv-party-label">Bill To</div>
-              <div id="prev-client-company" class="inv-party-name"></div>
-              <div id="prev-client-name" class="inv-party-sub"></div>
-              <div id="prev-client-addr" class="inv-party-lines"></div>
-            </div>
-          </div>
-
-          <!-- Services Table -->
-          <table class="inv-table">
-            <thead>
-              <tr>
-                <th class="col-desc">Description</th>
-                <th class="col-qty">Qty</th>
-                <th class="col-price">Unit Price</th>
-                <th class="col-total">Amount</th>
-              </tr>
-            </thead>
-            <tbody id="prev-services"></tbody>
-          </table>
-
-          <!-- Totals -->
-          <div class="inv-totals-wrap">
-            <div class="inv-totals">
-              <div class="inv-total-row">
-                <span>Subtotal</span>
-                <span id="prev-subtotal">A$0.00</span>
+            <!-- Name & ABN / Email & Phone -->
+            <div class="grid-2">
+              <div class="field">
+                <label>Business / Sender Name <span style="color:#f87171">*</span></label>
+                <input type="text" id="as-name" placeholder="Acme Pty Ltd" />
               </div>
-              <div class="inv-total-row" id="prev-tax-row">
-                <span id="prev-tax-label">Tax (10%)</span>
-                <span id="prev-tax-amt">A$0.00</span>
+              <div class="field">
+                <label>ABN / Tax Number</label>
+                <input type="text" id="as-abn" placeholder="12 345 678 901" />
               </div>
-              <div class="inv-total-grand">
-                <span id="prev-total-label">Total (AUD)</span>
-                <span id="prev-total-amt">A$0.00</span>
+              <div class="field">
+                <label>Email</label>
+                <input type="email" id="as-email" placeholder="hello@yourco.com" />
+              </div>
+              <div class="field">
+                <label>Phone</label>
+                <input type="text" id="as-phone" placeholder="+61 400 000 000" />
               </div>
             </div>
-          </div>
 
-          <!-- Notes -->
-          <div id="prev-notes-wrap" class="inv-notes-wrap">
-            <div class="inv-notes-label">Notes &amp; Payment Terms</div>
-            <div id="prev-notes" class="inv-notes-text"></div>
-          </div>
+            <!-- Address -->
+            <div class="field">
+              <label>Street Address</label>
+              <input type="text" id="as-address" placeholder="123 Main Street" />
+            </div>
 
-          <!-- Footer -->
-          <div class="inv-footer">Generated with Invoice Generator</div>
+            <!-- Suburb / State / Postcode -->
+            <div class="grid-3">
+              <div class="field">
+                <label>City / Suburb</label>
+                <input type="text" id="as-suburb" placeholder="Sydney" />
+              </div>
+              <div class="field">
+                <label>State</label>
+                <input type="text" id="as-state" placeholder="NSW" />
+              </div>
+              <div class="field">
+                <label>Postcode</label>
+                <input type="text" id="as-postcode" placeholder="2000" />
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button type="button" class="btn-save-sender" onclick="saveSenderFromForm()">Save Sender</button>
+              <button type="button" class="btn-secondary" onclick="hideAddSenderPanel()">Cancel</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
+
+        <!-- Logo -->
+        <div class="section">
+          <div class="section-title">Logo</div>
+          <div class="logo-row">
+            <div id="logo-preview-wrap">
+              <div id="logo-placeholder">No logo</div>
+              <img id="logo-preview" src="" alt="Logo" style="display:none" />
+            </div>
+            <div>
+              <button type="button" class="btn-secondary" onclick="document.getElementById('logo-input').click()">Upload Logo</button>
+              <button type="button" class="btn-remove" id="logo-remove" style="display:none" onclick="removeLogo()">Remove</button>
+            </div>
+            <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="handleLogo(this)" />
+          </div>
+        </div>
+
+        <!-- Invoice Info -->
+        <div class="section">
+          <div class="section-title">Invoice Info</div>
+          <div class="grid-2">
+            <div class="field">
+              <label>Invoice Number</label>
+              <input type="text" id="invoiceNumber" value="INV-001" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Currency</label>
+              <select id="currency" onchange="update()">
+                <option value="AUD">AUD — Australian Dollar (A$)</option>
+                <option value="USD">USD — US Dollar ($)</option>
+                <option value="EUR">EUR — Euro (€)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Invoice Date</label>
+              <input type="date" id="invoiceDate" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Due Date</label>
+              <input type="date" id="dueDate" oninput="update()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Provider / Your Details -->
+        <div class="section">
+          <div class="section-title">Your Details (Service Provider)</div>
+          <div class="grid-2">
+            <div class="field">
+              <label>Business / Your Name</label>
+              <input type="text" id="providerName" placeholder="Acme Pty Ltd" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>ABN / Tax Number</label>
+              <input type="text" id="providerABN" placeholder="12 345 678 901" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="providerEmail" placeholder="hello@yourco.com" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input type="text" id="providerPhone" placeholder="+61 400 000 000" oninput="update()" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Street Address</label>
+            <input type="text" id="providerAddress" placeholder="123 Main Street" oninput="update()" />
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label>City / Suburb</label>
+              <input type="text" id="providerSuburb" placeholder="Sydney" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>State</label>
+              <input type="text" id="providerState" placeholder="NSW" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Postcode</label>
+              <input type="text" id="providerPostcode" placeholder="2000" oninput="update()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Client / Bill To -->
+        <div class="section">
+          <div class="section-title">Bill To (Client Details)</div>
+          <div class="grid-2">
+            <div class="field">
+              <label>Client Name</label>
+              <input type="text" id="clientName" placeholder="Jane Smith" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Company (optional)</label>
+              <input type="text" id="clientCompany" placeholder="Client Co. Pty Ltd" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="clientEmail" placeholder="jane@clientco.com" oninput="update()" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Street Address</label>
+            <input type="text" id="clientAddress" placeholder="456 Client Avenue" oninput="update()" />
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label>City / Suburb</label>
+              <input type="text" id="clientSuburb" placeholder="Melbourne" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>State</label>
+              <input type="text" id="clientState" placeholder="VIC" oninput="update()" />
+            </div>
+            <div class="field">
+              <label>Postcode</label>
+              <input type="text" id="clientPostcode" placeholder="3000" oninput="update()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="section">
+          <div class="section-title">Services / Line Items</div>
+          <div id="services-list"></div>
+          <button type="button" class="btn-add" onclick="addService()">+ Add Line Item</button>
+        </div>
+
+        <!-- Tax & Notes -->
+        <div class="section">
+          <div class="section-title">Tax &amp; Notes</div>
+          <div class="field">
+            <label>Tax Rate (%)</label>
+            <input type="number" id="taxRate" min="0" max="100" step="0.1" oninput="update()" />
+          </div>
+          <div class="field">
+            <label>Notes / Payment Terms</label>
+            <textarea id="notes" rows="3" placeholder="Payment terms, bank details, thank you message..." oninput="update()"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PREVIEW PANEL ===== -->
+      <section class="panel preview-panel">
+        <button class="btn-download" onclick="downloadPDF()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span id="btn-label">Download as PDF</span>
+        </button>
+        <p class="preview-hint">Live preview — fill the form to see changes</p>
+
+        <div class="preview-scaler">
+          <div id="invoice-preview" class="invoice-paper">
+
+            <!-- Invoice Header -->
+            <div class="inv-header">
+              <div class="inv-logo-block">
+                <img id="prev-logo" src="" alt="" style="display:none;max-height:80px;max-width:200px;object-fit:contain" />
+                <div id="prev-biz-name" class="inv-biz-name"></div>
+              </div>
+              <div class="inv-title-block">
+                <div class="inv-title">INVOICE</div>
+                <div class="inv-meta">
+                  <div><strong>Invoice #:</strong> <span id="prev-inv-num">INV-001</span></div>
+                  <div><strong>Date:</strong> <span id="prev-inv-date">—</span></div>
+                  <div id="prev-due-wrap"><strong>Due:</strong> <span id="prev-due-date">—</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="inv-divider"></div>
+
+            <!-- From / Bill To -->
+            <div class="inv-parties">
+              <div class="inv-from">
+                <div class="inv-party-label">From</div>
+                <div id="prev-provider-name" class="inv-party-name"></div>
+                <div id="prev-provider-abn" class="inv-party-sub"></div>
+                <div id="prev-provider-addr" class="inv-party-lines"></div>
+              </div>
+              <div class="inv-billto">
+                <div class="inv-party-label">Bill To</div>
+                <div id="prev-client-company" class="inv-party-name"></div>
+                <div id="prev-client-name" class="inv-party-sub"></div>
+                <div id="prev-client-addr" class="inv-party-lines"></div>
+              </div>
+            </div>
+
+            <!-- Services Table -->
+            <table class="inv-table">
+              <thead>
+                <tr>
+                  <th class="col-desc">Description</th>
+                  <th class="col-qty">Qty</th>
+                  <th class="col-price">Unit Price</th>
+                  <th class="col-total">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="prev-services"></tbody>
+            </table>
+
+            <!-- Totals -->
+            <div class="inv-totals-wrap">
+              <div class="inv-totals">
+                <div class="inv-total-row">
+                  <span>Subtotal</span>
+                  <span id="prev-subtotal">A$0.00</span>
+                </div>
+                <div class="inv-total-row" id="prev-tax-row">
+                  <span id="prev-tax-label">Tax (10%)</span>
+                  <span id="prev-tax-amt">A$0.00</span>
+                </div>
+                <div class="inv-total-grand">
+                  <span id="prev-total-label">Total (AUD)</span>
+                  <span id="prev-total-amt">A$0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div id="prev-notes-wrap" class="inv-notes-wrap">
+              <div class="inv-notes-label">Notes &amp; Payment Terms</div>
+              <div id="prev-notes" class="inv-notes-text"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="inv-footer">Generated with Invoice Generator</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div><!-- /.app-layout -->
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
