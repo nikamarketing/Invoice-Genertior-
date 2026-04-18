@@ -15,6 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('dueDate').value = due;
 
   seedSenders();
+  seedClients();
   const senders = getSenders();
   if (senders.length > 0) selectSender(senders[0].id, false);
 
@@ -127,6 +128,20 @@ function saveCurrentAsSender() {
 }
 
 // ── Clients ───────────────────────────────────────────
+function seedClients() {
+  if (getSavedClients().length > 0) return;
+  saveClientsStorage([{
+    id: Date.now(),
+    name: '',
+    company: 'Australian Universal Federation of Education and Culture (AUF)',
+    email: 'info@auf.net.au',
+    address: 'LEVEL 1, 110 MOORE STREET',
+    suburb: 'LIVERPOOL',
+    state: 'NSW',
+    postcode: '2170',
+  }]);
+}
+
 function getSavedClients() {
   try { return JSON.parse(localStorage.getItem('inv_clients') || '[]'); } catch { return []; }
 }
